@@ -12,11 +12,33 @@ require( [
   ],
   function($, server, http, testHttp) {
 
+    function makeCrossDomain(){
+      var reply = "";
+      reply += "<cross-domain-policy>\n";
+      reply += "<allow-access-from domain=\"*\" to-ports=\"" + PORT + "\"/>\n";
+      reply += "</cross-domain-policy>";
+
+      return reply;
+    }
+
+    var lastPath;
+
     http.requestMade.add(function(verb,path, text) {
 
       //http.send("<html><pre>echoing:\n" + text + "</pre></html>");
-      http.send("_success getting " + path);
-      info("served path:" + path);
+
+      if (path == "crossdomain.xml")
+      {
+        http.send(makeCrossDomain());
+      } else{
+        http.send("_success getting " + path);
+      }
+
+      if (lastPath != path) info("served path:" + path);
+
+      lastPath = path;
+
+      
     });
 
     var log = function(type, msg) {
@@ -32,7 +54,7 @@ require( [
     server.error.add(error);
     server.info.add(info);
 
-    var IP = "127.0.0.1", PORT = 12345;
+    var IP = "127.0.0.1", PORT = 17301;
     server.start(IP, PORT);
   }
 );

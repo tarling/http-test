@@ -7,7 +7,7 @@ define(['signals'], function(Signal) {
   function listenAndAccept(socketId) {
     chrome.sockets.tcpServer.listen(socketId,
       self.ip, self.port, function(resultCode) {
-        self.info.dispatch("listen operation completed on socket " + socketId);
+        self.info.dispatch("listen operation completed on server socket " + socketId);
         onListenCallback(socketId, resultCode)
     });
   }
@@ -19,7 +19,7 @@ define(['signals'], function(Signal) {
         chrome.runtime.lastError.message);
       return;
     } else {
-      self.info.dispatch("listening on socket " + socketId);
+      self.info.dispatch("listening on server socket " + socketId);
     }
     serverSocketId = socketId;
     chrome.sockets.tcpServer.onAccept.addListener(onAccept)
@@ -40,11 +40,7 @@ define(['signals'], function(Signal) {
 
     chrome.sockets.tcp.onReceive.addListener(function(recvInfo) {
       var data = new Uint8Array(recvInfo.data);
-      if (data[0] == 0x47) {
-
-        //console.warn("first byte: 0x47")
-
-      } else if (data[0] == 0x82) {
+      if (data[0] == 0x82) {
 
         console.warn("first byte: 0x82")
 
@@ -52,15 +48,11 @@ define(['signals'], function(Signal) {
 
         console.warn("first byte: 0x88")
       }
-
-
       self.received.dispatch(recvInfo.data);
     });
     chrome.sockets.tcp.onReceiveError.addListener(function(info) {
       self.error.dispatch("chrome.sockets.tcp.onReceiveError on socket " + info.socketId);
       console.dir(info);
-
-      chrome.sockets.tcp.setPaused(info.socketId, false);
     });
     chrome.sockets.tcp.setPaused(info.clientSocketId, false);
 
@@ -90,6 +82,7 @@ define(['signals'], function(Signal) {
       self.error.dispatch("server error @send:" + chrome.runtime.lastError.message)
       self.stop();
     } else {
+
       chrome.sockets.tcp.send(clientSocketId, buf, function(resultCode){
         if (chrome.runtime.lastError != null)
         {
