@@ -48,15 +48,36 @@ define(['signals'], function(Signal) {
 
         console.warn("first byte: 0x88")
       }
+      self.info.dispatch("received data on client socket " + recvInfo.socketId);
       self.received.dispatch(recvInfo.data);
     });
     chrome.sockets.tcp.onReceiveError.addListener(function(info) {
       self.error.dispatch("chrome.sockets.tcp.onReceiveError on socket " + info.socketId);
+
+      chrome.sockets.tcp.setPaused(info.socketId, false);
+
+      getConnectedId();
+
       console.dir(info);
     });
     chrome.sockets.tcp.setPaused(info.clientSocketId, false);
 
     //chrome.sockets.tcpServer.onAccept.removeListener(onAccept)
+  }
+
+  function getConnectedId() {
+    chrome.sockets.tcp.getSockets(function(list){
+      list.some(function(item){
+
+        if (item.connected)
+        {
+          clientSocketId = item.socketId;
+          console.log("found connection at " + clientSocketId);
+
+          return true;
+        }
+      });
+    })
   }
 
   var self = {};
@@ -75,18 +96,17 @@ define(['signals'], function(Signal) {
     chrome.sockets.tcpServer.disconnect(serverSocketId);
   }
 
-  self.send = function(buf) {
-
+  self.send = function(id, buf) {
     if (chrome.runtime.lastError != null)
     {
-      self.error.dispatch("server error @send:" + chrome.runtime.lastError.message)
+      self.error.dispatch("server error @send:" + chrome.runtime.lastError.message + ", clientSocketId:" + clientSocketId)
       self.stop();
     } else {
 
       chrome.sockets.tcp.send(clientSocketId, buf, function(resultCode){
         if (chrome.runtime.lastError != null)
         {
-          self.error.dispatch("server error @send callback:" + chrome.runtime.lastError.message);
+          self.error.dispatch("server error @send callback:" + chrome.runtime.lastError.message + ", clientSocketId:" + clientSocketId);
           self.stop();
         }
       });

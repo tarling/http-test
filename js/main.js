@@ -25,8 +25,6 @@ require( [
 
     http.requestMade.add(function(verb,path, text) {
 
-      //http.send("<html><pre>echoing:\n" + text + "</pre></html>");
-
       if (path == "crossdomain.xml")
       {
         http.send(makeCrossDomain());
@@ -38,11 +36,13 @@ require( [
 
       lastPath = path;
 
-      
+
     });
 
     var log = function(type, msg) {
-      $("#log").append("[" + type + "]" + msg + "\n");
+      var el = $("#log");
+      el.append("[" + type + "]" + msg + "\n");
+      el.scrollTop(el.prop("scrollHeight"));
     }
     var info = function(msg){
       log("INFO",msg);
@@ -53,6 +53,8 @@ require( [
 
     server.error.add(error);
     server.info.add(info);
+
+    info("booting up...");
 
     var IP = "127.0.0.1", PORT = 17301;
     server.start(IP, PORT);

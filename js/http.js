@@ -48,7 +48,8 @@ define(["./server", "signals"], function(server, Signal) {
     header += "HTTP/1.1 200 OK\n";
     header += "Content-Type: text/html; charset=ISO-8859-1\n";
     header += "Content-Length: " + msg.length + "\n";
-    header += "Access-Control-Allow-Origin: *\n\n";
+    header += "Access-Control-Allow-Origin: *\n";
+    header += "Connection:	keep-alive\n\n";
 
     self.responded.dispatch(msg);
 
