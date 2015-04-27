@@ -14,13 +14,23 @@ require( [
 
     http.requestMade.add(function(verb,path, text) {
 
-      //http.send("<html><pre>echoing:\n" + text + "</pre></html>");
       http.send("_success getting " + path);
       info("served path:" + path);
     });
 
+    $("#send").click(function(){
+      var url = "http://" + IP + ":" + PORT + "/" + (new Date()).getTime();
+      $.ajax({
+        url: url
+      }).done(function( data ) {
+        info("asked for " + url)
+      });
+    });
+
     var log = function(type, msg) {
-      $("#log").append("[" + type + "]" + msg + "\n");
+      var el = $("#log");
+      el.append("[" + type + "]" + msg + "\n");
+      el.scrollTop(el.prop("scrollHeight"));
     }
     var info = function(msg){
       log("INFO",msg);

@@ -11,8 +11,5 @@
   "icons": { "16": "calculator-16.png", "128": "calculator-128.png" },
   "sockets": {
     "tcpServer": { "listen" : ":12345" }
-  },
-  "permissions": [
-    "webview"
-  ]
+  }
 }
