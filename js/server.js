@@ -96,7 +96,7 @@ define(['signals'], function(Signal) {
     chrome.sockets.tcpServer.disconnect(serverSocketId);
   }
 
-  self.send = function(id, buf) {
+  self.send = function(buf) {
     if (chrome.runtime.lastError != null)
     {
       self.error.dispatch("server error @send:" + chrome.runtime.lastError.message + ", clientSocketId:" + clientSocketId)
