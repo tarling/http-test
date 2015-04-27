@@ -29,8 +29,8 @@ require( [
       log("ERROR",msg);
     }
 
-    server.error.add(info);
-    server.info.add(error);
+    server.error.add(error);
+    server.info.add(info);
 
     var IP = "127.0.0.1", PORT = 12345;
     server.start(IP, PORT);
