@@ -12,16 +12,18 @@ require( [
   ],
   function($, server, http, testHttp) {
 
+
+
     function makeCrossDomain(){
       var reply = "";
       reply += "<cross-domain-policy>\n";
       reply += "<allow-access-from domain=\"*\" to-ports=\"" + PORT + "\"/>\n";
-      reply += "</cross-domain-policy>";
+      reply += "</cross-domain-policy>\0";
 
       return reply;
     }
 
-    var lastPath;
+    //var lastPath;
 
     http.requestMade.add(function(verb,path, text) {
 
@@ -29,12 +31,25 @@ require( [
       {
         http.send(makeCrossDomain());
       } else{
-        http.send("_success getting " + path);
+var out = "";
+out+="_success WeDo is connected\r\n";
+out+="distance 0\r\n";
+out+="tilt 0\r\n";
+out+="custom 0\r\n";
+out+="sensor/distance 0\r\n";
+out+="sensor/tilt 0\r\n";
+out+="sensor/custom 0\r\n";
+out+="_success Wedo Connected\r\n";
+
+
+
+
+        http.send(out);
       }
 
-      if (lastPath != path) info("served path:" + path);
+      //if (lastPath != path) info("served path:" + path);
 
-      lastPath = path;
+      //lastPath = path;
 
 
     });
@@ -51,8 +66,20 @@ require( [
       log("ERROR",msg);
     }
 
+    function ab2str(buf) {
+      //http://stackoverflow.com/questions/6965107
+      return String.fromCharCode.apply(null, new Uint8Array(buf));
+    }
+
     server.error.add(error);
     server.info.add(info);
+    server.received.add(function(buf){
+      info("RECEIVED:" + ab2str(buf));
+    });
+
+    http.responded.add(function(msg){
+      info("SENDING:" + msg);
+    });
 
     info("booting up...");
 

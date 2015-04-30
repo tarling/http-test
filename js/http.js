@@ -9,6 +9,8 @@ define(["./server", "signals"], function(server, Signal) {
 
   */
 
+  var nl = "\r\n";
+
   server.received.add(function(buf) {
     var text = ab2str(buf);
 
@@ -28,13 +30,9 @@ define(["./server", "signals"], function(server, Signal) {
   }
 
   function str2ab(data) {
-    //https://github.com/khanning/chrome-wedo-helper/blob/master/src/js/socket.js
-    var array = new Uint8Array(data.length+2);
-    array[0] = 0x81;
-    array[1] = data.length;
+    var array = new Uint8Array(data.length);
     for (var i=0; i<data.length; i++)
-      array[i+2] = data.charCodeAt(i);
-
+      array[i] = data.charCodeAt(i);
     return array.buffer;
   }
 
@@ -45,15 +43,17 @@ define(["./server", "signals"], function(server, Signal) {
   self.send = function(msg) {
     //console.info("sending msg:" + msg);
     var header = ""
-    header += "HTTP/1.1 200 OK\n";
-    header += "Content-Type: text/html; charset=ISO-8859-1\n";
-    header += "Content-Length: " + msg.length + "\n";
-    header += "Access-Control-Allow-Origin: *\n";
-    header += "Connection: keep-alive\n\n";
+    header += "HTTP/1.1 200 OK" + nl;
+    header += "Content-Type: text/html; charset=ISO-8859-1" + nl;
+    header += "Content-Length: " + msg.length + nl;
+    header += "Access-Control-Allow-Origin: *" + nl;
+    //header += "Connection: keep-alive" + nl;
+    header += nl;
+    var all = header + msg;
 
-    self.responded.dispatch(msg);
+    self.responded.dispatch(all);
 
-    server.send(str2ab(header + msg + "\0"));
+    server.send(str2ab(all));
   }
   return self;
 

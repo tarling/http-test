@@ -68,9 +68,9 @@ define(['signals'], function(Signal) {
 
     clientSocketId = recvInfo.clientSocketId;
 
-    chrome.sockets.tcp.setKeepAlive(clientSocketId, true, 0, function(resultCode){
+    /*chrome.sockets.tcp.setKeepAlive(clientSocketId, true, 0, function(resultCode){
       info("keep alive result code " + resultCode);
-    })
+    })*/
     info("connection made on client socket " + clientSocketId);
 
     chrome.sockets.tcp.setPaused(clientSocketId, false);
